@@ -138,54 +138,54 @@ class LogisticRegression:
                 
         return self.w ,self.b        
 
-    def splite_train_data(x, y, splite_rate=0.75):
-        length = int(len(x) * splite_rate)
-        return x[:length], y[:length], x[length:], y[length:]
+def splite_train_data(x, y, splite_rate=0.75):
+    length = int(len(x) * splite_rate)
+    return x[:length], y[:length], x[length:], y[length:]
 
 
-    def u(x):
-        return np.mean(x, axis=0)
+def u(x):
+    return np.mean(x, axis=0)
     
-    def sigma(x):
+def sigma(x):
         return ((x - u(x)).T).dot((x - u(x)))/len(x)
 
-    def classification(x, y):
-        class0 = np.where(y == 0)
-        class1 = np.where(y == 1)
-        return x[class0], x[class1]
+def classification(x, y):
+    class0 = np.where(y == 0)
+    class1 = np.where(y == 1)
+    return x[class0], x[class1]
+
+def generate(x_train, y_train, splite_rate=1):
+        """Use generative mode
+
+    this will return weight and bias
+    """
+    x_train, y_train, x_vali, y_vali = splite_train_data(x_train, y_train, splite_rate)
+
     
-    def generate(x_train, y_train, splite_rate=1):
-            """Use generative mode
 
-        this will return weight and bias
-        """
-        x_train, y_train, x_vali, y_vali = splite_train_data(x_train, y_train, splite_rate)
+    class0, class1 = classification(x_train, y_train)
 
-        
+    u0 = u(class0)
+    u1 = u(class1)
 
-        class0, class1 = classification(x_train, y_train)
+    sigma0 = sigma(class0)
+    sigma1 = sigma(class1)
 
-        u0 = u(class0)
-        u1 = u(class1)
+    
+    total_number = len(class0) + len(class1)
+    class0_w = len(class0)/total_number
+    class1_w = len(class1)/total_number
 
-        sigma0 = sigma(class0)
-        sigma1 = sigma(class1)
+    cov_sigma = class0_w * sigma0 + class1_w * sigma1
 
-        
-        total_number = len(class0) + len(class1)
-        class0_w = len(class0)/total_number
-        class1_w = len(class1)/total_number
-
-        cov_sigma = class0_w * sigma0 + class1_w * sigma1
-
-        w = ((u0 - u1).dot(inv(cov_sigma))).T
-        b1 = - (u0.T).dot(inv(cov_sigma)).dot(u0)/2 
-        b2 = (u1.T).dot(inv(cov_sigma)).dot(u1)/2
-        b3 = np.log(len(class0)/len(class1)) 
-        b = b1 + b2 + b3
-        
-        # ac = predict(x_train, y_train, w, b)
-        # print('vali accuracy :', predict(x_vali, y_vali, w, b))
-        return w, b
+    w = ((u0 - u1).dot(inv(cov_sigma))).T
+    b1 = - (u0.T).dot(inv(cov_sigma)).dot(u0)/2 
+    b2 = (u1.T).dot(inv(cov_sigma)).dot(u1)/2
+    b3 = np.log(len(class0)/len(class1)) 
+    b = b1 + b2 + b3
+    
+    # ac = predict(x_train, y_train, w, b)
+    # print('vali accuracy :', predict(x_vali, y_vali, w, b))
+    return w, b
 
 
