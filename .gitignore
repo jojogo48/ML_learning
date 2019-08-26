@@ -1,3 +1,5 @@
 *.csv
 logistic_regression/data/
 Image_Sentiment_Classification/data/
+Image_Sentiment_Classification/filter_img/
+Image_Sentiment_Classification/model/
